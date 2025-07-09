@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./students.db"
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Student API"
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 
     class Config:
         env_file = ".env"

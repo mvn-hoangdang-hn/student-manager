@@ -8,14 +8,13 @@ from uuid import UUID
 from sqlalchemy import Column, DateTime
 from sqlalchemy.dialects.sqlite import TEXT
 
-
 from sqlmodel import SQLModel, Field
 
 
 class Student(SQLModel, table=True):
     __tablename__ = "students"
 
-    id: Optional[UUID] = Field(
+    id: Optional[str] = Field(  # Đổi từ UUID thành str
         default=None,
         sa_column=Column(
             TEXT,
@@ -31,8 +30,10 @@ class Student(SQLModel, table=True):
     enrollment_date: datetime = Field(default_factory=datetime.utcnow)
 
     created_at: datetime = Field(
+        default_factory=datetime.utcnow,
         sa_column=Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     )
     updated_at: datetime = Field(
+        default_factory=datetime.utcnow,
         sa_column=Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False, onupdate=datetime.utcnow)
     )

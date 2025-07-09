@@ -31,7 +31,9 @@ class StudentRepository(IStudentRepository):
             )
 
         # Tạo object Student từ dữ liệu đã validate
-        obj = Student.from_orm(student_in)
+        student_data = student_in.model_dump()
+        obj = Student(**student_data)
+
         self.session.add(obj)
         self.session.commit()
         self.session.refresh(obj)
@@ -43,17 +45,17 @@ class StudentRepository(IStudentRepository):
         ).all()
 
     def get(self, student_id: UUID) -> Optional[Student]:
-        return self.session.get(Student, student_id)
+        return self.session.get(Student, str(student_id))
 
     def update(self, student_id: UUID, student_in: StudentUpdate) -> Student:
-        db_obj = self.session.get(Student, student_id)
+        db_obj = self.session.get(Student, str(student_id))
         if not db_obj:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Student không tồn tại"
             )
 
-        data = student_in.dict(exclude_unset=True)
+        data = student_in.model_dump(exclude_unset=True)
         for key, value in data.items():
             setattr(db_obj, key, value)
 
@@ -63,7 +65,7 @@ class StudentRepository(IStudentRepository):
         return db_obj
 
     def delete(self, student_id: UUID) -> None:
-        db_obj = self.session.get(Student, student_id)
+        db_obj = self.session.get(Student, str(student_id))
         if not db_obj:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

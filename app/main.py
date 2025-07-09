@@ -1,8 +1,7 @@
-# app/main.py
-
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
 
 from app.core.config import get_settings
 from app.core.database import create_db_and_tables
@@ -13,6 +12,7 @@ from app.core.exception_handlers import (
 )
 
 from app.routers.student import router as student_router
+from app.routers.grade import router as grade_router
 
 settings = get_settings()
 
@@ -33,7 +33,6 @@ app.add_middleware(
 
 app.middleware("http")(LogRequestMiddleware())
 
-from fastapi.exceptions import RequestValidationError
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, generic_exception_handler)
 
@@ -42,8 +41,9 @@ def on_startup():
     create_db_and_tables()
 
 app.include_router(student_router, prefix=settings.API_V1_STR)
+app.include_router(grade_router, prefix=settings.API_V1_STR)  # Thêm grade router
 
-@app.get("/", response_model=dict)
+@app.get("/")
 def health_check():
     return {"success": True, "data": None, "message": "API is up and running"}
 
